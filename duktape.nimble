@@ -12,12 +12,7 @@ requires "nimgen >= 0.1.4"
 skipDirs = @["tests","src"]
 installDirs = @["duktape"]
 
-# Dependencies
-import distros
-
 var cmd = ""
-if detectOs(Windows):
-    cmd = "cmd /c "
 
 task setup, "Download and generate":
     # exec cmd & "/bin/cp -r duktape-2.2.1/src/* nim_duktape/src && nimgen nim_duktape.cfg"
