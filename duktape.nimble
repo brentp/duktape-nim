@@ -15,7 +15,7 @@ installDirs = @["duktape"]
 var cmd = ""
 
 task setup, "Download and generate":
-    # exec cmd & "/bin/cp -r duktape-2.2.1/src/* nim_duktape/src && nimgen nim_duktape.cfg"
+    exec cmd & "/bin/cp -r duktape/duktape-2.3.0/src/* duktape/src && nimgen nim_duktape.cfg"
     exec cmd & "nimgen duktape.cfg"
 
 before install:
