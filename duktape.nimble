@@ -18,8 +18,8 @@ task setup, "Download and generate":
     #exec cmd & "/bin/cp -r duktape/duktape-2.3.0/src/* duktape/src && nimgen nim_duktape.cfg"
     exec cmd & "nimgen duktape.cfg"
 
-before install:
-    setupTask()
+#before install:
+#    setupTask()
 
 task test, "Test duktape":
     exec "nim c -r tests/basic_eval.nim"
