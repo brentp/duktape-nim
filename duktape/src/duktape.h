@@ -1,12 +1,12 @@
 /*
- *  Duktape public API for Duktape 2.3.0.
+ *  Duktape public API for Duktape 2.3.99.
  *
  *  See the API reference for documentation on call semantics.  The exposed,
  *  supported API is between the "BEGIN PUBLIC API" and "END PUBLIC API"
  *  comments.  Other parts of the header are Duktape internal and related to
  *  e.g. platform/compiler/feature detection.
  *
- *  Git commit d7fdb67f18561a50e06bafd196c6b423af9ad6fe (v2.3.0).
+ *  Git commit 1c2b044bb6b457fb5247889beb3c66b8be58ab09 (v2.3.0-85-g1c2b044b).
  *  Git branch master.
  *
  *  See Duktape AUTHORS.rst and LICENSE.txt for copyright and
@@ -100,6 +100,13 @@
  *  * Michal Kasperek (https://github.com/michalkas)
  *  * Andrew Janke (https://github.com/apjanke)
  *  * Steve Fan (https://github.com/stevefan1999)
+ *  * Edward Betts (https://github.com/edwardbetts)
+ *  * Ozhan Duz (https://github.com/webfolderio)
+ *  * Akos Kiss (https://github.com/akosthekiss)
+ *  * TheBrokenRail (https://github.com/TheBrokenRail)
+ *  * Jesse Doyle (https://github.com/jessedoyle)
+ *  * Gero Kuehn (https://github.com/dc6jgk)
+ *  * James Swift (https://github.com/phraemer)
  *  
  *  Other contributions
  *  ===================
@@ -140,6 +147,7 @@
  *  * Neil Kolban (https://github.com/nkolban)
  *  * Wilhelm Wanecek (https://github.com/wanecek)
  *  * Andrew Janke (https://github.com/apjanke)
+ *  * Unamer (https://github.com/unamer)
  *  
  *  If you are accidentally missing from this list, send me an e-mail
  *  (``sami.vaarala@iki.fi``) and I'll fix the omission.
@@ -164,15 +172,15 @@
  * development snapshots have 99 for patch level (e.g. 0.10.99 would be a
  * development version after 0.10.0 but before the next official release).
  */
-#define DUK_VERSION                       20300L
+#define DUK_VERSION                       20399L
 
 /* Git commit, describe, and branch for Duktape build.  Useful for
  * non-official snapshot builds so that application code can easily log
  * which Duktape snapshot was used.  Not available in the ECMAScript
  * environment.
  */
-#define DUK_GIT_COMMIT                    "d7fdb67f18561a50e06bafd196c6b423af9ad6fe"
-#define DUK_GIT_DESCRIBE                  "v2.3.0"
+#define DUK_GIT_COMMIT                    "1c2b044bb6b457fb5247889beb3c66b8be58ab09"
+#define DUK_GIT_DESCRIBE                  "v2.3.0-85-g1c2b044b"
 #define DUK_GIT_BRANCH                    "master"
 
 /* External duk_config.h provides platform/compiler/OS dependent
@@ -703,6 +711,7 @@ DUK_EXTERNAL_DECL void duk_push_thread_stash(duk_context *ctx, duk_context *targ
 DUK_EXTERNAL_DECL duk_idx_t duk_push_object(duk_context *ctx);
 DUK_EXTERNAL_DECL duk_idx_t duk_push_bare_object(duk_context *ctx);
 DUK_EXTERNAL_DECL duk_idx_t duk_push_array(duk_context *ctx);
+DUK_EXTERNAL_DECL duk_idx_t duk_push_bare_array(duk_context *ctx);
 DUK_EXTERNAL_DECL duk_idx_t duk_push_c_function(duk_context *ctx, duk_c_function func, duk_idx_t nargs);
 DUK_EXTERNAL_DECL duk_idx_t duk_push_c_lightfunc(duk_context *ctx, duk_c_function func, duk_idx_t nargs, duk_idx_t length, duk_int_t magic);
 DUK_EXTERNAL_DECL duk_idx_t duk_push_thread_raw(duk_context *ctx, duk_uint_t flags);
@@ -986,6 +995,8 @@ DUK_EXTERNAL_DECL void duk_to_primitive(duk_context *ctx, duk_idx_t idx, duk_int
 
 /* safe variants of a few coercion operations */
 DUK_EXTERNAL_DECL const char *duk_safe_to_lstring(duk_context *ctx, duk_idx_t idx, duk_size_t *out_len);
+DUK_EXTERNAL_DECL const char *duk_to_stacktrace(duk_context *ctx, duk_idx_t idx);
+DUK_EXTERNAL_DECL const char *duk_safe_to_stacktrace(duk_context *ctx, duk_idx_t idx);
 #define duk_safe_to_string(ctx,idx) \
 	duk_safe_to_lstring((ctx), (idx), NULL)
 
