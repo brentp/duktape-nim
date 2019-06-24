@@ -7,7 +7,7 @@ license       = "MIT"
 
 # Dependencies
 
-requires "nimgen >= 0.1.4"
+#requires "nimgen >= 0.1.4"
 
 skipDirs = @["tests","src"]
 installDirs = @["duktape"]
