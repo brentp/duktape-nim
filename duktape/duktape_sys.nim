@@ -34,9 +34,13 @@ type
   # signatures match Duktape's function pointer typedefs exactly.
   cstringConst {.importc: "const char *", nodecl.} = cstring
 
-  # Make sure the generated C uses `duk_context *` rather than `void *`
-  # so function pointer signatures (e.g. `duk_c_function`) match duktape.h.
-  DTContext* {.importc: "duk_context *", nodecl.} = pointer
+  # Duktape public API uses `duk_context *` which is a typedef to `struct duk_hthread *`.
+  # Expose the underlying struct name too, because some downstream code refers
+  # to it directly.
+  duk_hthread* {.importc: "struct duk_hthread", header: headerduktape,
+                incompleteStruct.} = object
+  duk_context* = duk_hthread
+  DTContext* = ptr duk_hthread
 const
   DUK_VERSION* = 20300
   DUK_DEBUG_PROTOCOL_VERSION* = 2
