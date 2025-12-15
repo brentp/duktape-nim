@@ -32,7 +32,7 @@ const headerduktape = sourcePath & "/src/duktape.h"
 type
   # Nim doesn't have a native `const char*` type; define one so callback
   # signatures match Duktape's function pointer typedefs exactly.
-  cstringConst* {.importc: "const char *", nodecl.} = cstring
+  cstringConst {.importc: "const char *", nodecl.} = cstring
 
   # Make sure the generated C uses `duk_context *` rather than `void *`
   # so function pointer signatures (e.g. `duk_c_function`) match duktape.h.
