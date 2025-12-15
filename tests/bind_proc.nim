@@ -2,7 +2,7 @@
 import duktape/js
 
 # Define proc to be bound
-var println: DTCFunction = (proc (ctx: DTContext): cint{.stdcall.} =
+var println: DTCFunction = (proc (ctx: DTContext): cint{.cdecl.} =
     echo duk_to_string(ctx, 0)
 )
 

@@ -1,6 +1,4 @@
 type
-  DTContext* = pointer
-type
   duk_int_t* = cint
   duk_uint_t* = cuint
   duk_uint8_t* = uint8
@@ -30,6 +28,15 @@ const sourcePath = currentSourcePath().split({'\\', '/'})[0..^2].join("/")
 {.passC: "-I\"" & sourcePath & "/src\"".}
 const headerduktape = sourcePath & "/src/duktape.h"
 {.compile: "duktape/src/duktape.c".}
+
+type
+  # Nim doesn't have a native `const char*` type; define one so callback
+  # signatures match Duktape's function pointer typedefs exactly.
+  cstringConst* {.importc: "const char *", nodecl.} = cstring
+
+  # Make sure the generated C uses `duk_context *` rather than `void *`
+  # so function pointer signatures (e.g. `duk_c_function`) match duktape.h.
+  DTContext* {.importc: "duk_context *", nodecl.} = pointer
 const
   DUK_VERSION* = 20300
   DUK_DEBUG_PROTOCOL_VERSION* = 2
@@ -106,57 +113,57 @@ type
   duk_time_components* {.importc: "struct duk_time_components",
                         header: headerduktape, bycopy.} = object
 
-  duk_c_function* = proc (ctx: DTContext): duk_ret_t {.stdcall.}
-  duk_alloc_function* = proc (udata: pointer; size: duk_size_t): pointer {.stdcall.}
+  duk_c_function* = proc (ctx: DTContext): duk_ret_t {.cdecl.}
+  duk_alloc_function* = proc (udata: pointer; size: duk_size_t): pointer {.cdecl.}
   duk_realloc_function* = proc (udata: pointer; `ptr`: pointer; size: duk_size_t): pointer {.
-      stdcall.}
-  duk_free_function* = proc (udata: pointer; `ptr`: pointer) {.stdcall.}
-  duk_fatal_function* = proc (udata: pointer; msg: cstring) {.stdcall.}
+      cdecl.}
+  duk_free_function* = proc (udata: pointer; `ptr`: pointer) {.cdecl.}
+  duk_fatal_function* = proc (udata: pointer; msg: cstringConst) {.cdecl.}
   duk_decode_char_function* = proc (udata: pointer; codepoint: duk_codepoint_t) {.
-      stdcall.}
+      cdecl.}
   duk_map_char_function* = proc (udata: pointer; codepoint: duk_codepoint_t): duk_codepoint_t {.
-      stdcall.}
+      cdecl.}
   duk_safe_call_function* = proc (ctx: DTContext; udata: pointer): duk_ret_t {.
-      stdcall.}
+      cdecl.}
   duk_debug_read_function* = proc (udata: pointer; buffer: cstring; length: duk_size_t): duk_size_t {.
-      stdcall.}
-  duk_debug_write_function* = proc (udata: pointer; buffer: cstring; length: duk_size_t): duk_size_t {.
-      stdcall.}
-  duk_debug_peek_function* = proc (udata: pointer): duk_size_t {.stdcall.}
-  duk_debug_read_flush_function* = proc (udata: pointer) {.stdcall.}
-  duk_debug_write_flush_function* = proc (udata: pointer) {.stdcall.}
+      cdecl.}
+  duk_debug_write_function* = proc (udata: pointer; buffer: cstringConst; length: duk_size_t): duk_size_t {.
+      cdecl.}
+  duk_debug_peek_function* = proc (udata: pointer): duk_size_t {.cdecl.}
+  duk_debug_read_flush_function* = proc (udata: pointer) {.cdecl.}
+  duk_debug_write_flush_function* = proc (udata: pointer) {.cdecl.}
   duk_debug_request_function* = proc (ctx: DTContext; udata: pointer;
-                                   nvalues: duk_idx_t): duk_idx_t {.stdcall.}
-  duk_debug_detached_function* = proc (ctx: DTContext; udata: pointer) {.stdcall.}
+                                   nvalues: duk_idx_t): duk_idx_t {.cdecl.}
+  duk_debug_detached_function* = proc (ctx: DTContext; udata: pointer) {.cdecl.}
 
 
 proc duk_create_heap*(alloc_func: duk_alloc_function;
                      realloc_func: duk_realloc_function;
                      free_func: duk_free_function; heap_udata: pointer;
-                     fatal_handler: duk_fatal_function): DTContext {.stdcall,
+                     fatal_handler: duk_fatal_function): DTContext {.cdecl,
     importc: "duk_create_heap", header: headerduktape.}
-proc duk_destroy_heap*(ctx: DTContext) {.stdcall, importc: "duk_destroy_heap",
+proc duk_destroy_heap*(ctx: DTContext) {.cdecl, importc: "duk_destroy_heap",
     header: headerduktape.}
-proc duk_suspend*(ctx: DTContext; state: ptr duk_thread_state) {.stdcall,
+proc duk_suspend*(ctx: DTContext; state: ptr duk_thread_state) {.cdecl,
     importc: "duk_suspend", header: headerduktape.}
-proc duk_resume*(ctx: DTContext; state: ptr duk_thread_state) {.stdcall,
+proc duk_resume*(ctx: DTContext; state: ptr duk_thread_state) {.cdecl,
     importc: "duk_resume", header: headerduktape.}
-proc duk_alloc_raw*(ctx: DTContext; size: duk_size_t): pointer {.stdcall,
+proc duk_alloc_raw*(ctx: DTContext; size: duk_size_t): pointer {.cdecl,
     importc: "duk_alloc_raw", header: headerduktape.}
-proc duk_free_raw*(ctx: DTContext; `ptr`: pointer) {.stdcall,
+proc duk_free_raw*(ctx: DTContext; `ptr`: pointer) {.cdecl,
     importc: "duk_free_raw", header: headerduktape.}
 proc duk_realloc_raw*(ctx: DTContext; `ptr`: pointer; size: duk_size_t): pointer {.
-    stdcall, importc: "duk_realloc_raw", header: headerduktape.}
-proc duk_alloc*(ctx: DTContext; size: duk_size_t): pointer {.stdcall,
+    cdecl, importc: "duk_realloc_raw", header: headerduktape.}
+proc duk_alloc*(ctx: DTContext; size: duk_size_t): pointer {.cdecl,
     importc: "duk_alloc", header: headerduktape.}
-proc duk_free*(ctx: DTContext; `ptr`: pointer) {.stdcall, importc: "duk_free",
+proc duk_free*(ctx: DTContext; `ptr`: pointer) {.cdecl, importc: "duk_free",
     header: headerduktape.}
 proc duk_realloc*(ctx: DTContext; `ptr`: pointer; size: duk_size_t): pointer {.
-    stdcall, importc: "duk_realloc", header: headerduktape.}
+    cdecl, importc: "duk_realloc", header: headerduktape.}
 proc duk_get_memory_functions*(ctx: DTContext;
-                              out_funcs: ptr duk_memory_functions) {.stdcall,
+                              out_funcs: ptr duk_memory_functions) {.cdecl,
     importc: "duk_get_memory_functions", header: headerduktape.}
-proc duk_gc*(ctx: DTContext; flags: duk_uint_t) {.stdcall, importc: "duk_gc",
+proc duk_gc*(ctx: DTContext; flags: duk_uint_t) {.cdecl, importc: "duk_gc",
     header: headerduktape.}
 proc duk_throw_raw*(ctx: DTContext) {.stdcall, importc: "duk_throw_raw",
                                         header: headerduktape.}
@@ -740,4 +747,3 @@ proc duk_peval*(ctx: DTContext): duk_size_t {.header: headerduktape.}
 
 type
   DTCFunction* = duk_c_function
-
